@@ -17,7 +17,7 @@
  * Copyright Jonas Gehring
  */
 
-package com.jjoe64.graphview;
+package com.jjoe64.graphview.formatter;
 
 /**
  * if you want to show different labels,
@@ -41,7 +41,7 @@ package com.jjoe64.graphview;
 		});
  * }
  */
-public interface CustomLabelFormatter {
+public interface LabelFormatter {
 
 	/**
 	 * will be called when the labels were generated
@@ -49,6 +49,6 @@ public interface CustomLabelFormatter {
 	 * @param isValueX true if value is a x-value, false if otherwise
 	 * @return the string that will be displayed. return null if you want graphview to generate the label for you.
 	 */
-	String formatLabel(double value, boolean isValueX);
+	String formatLabel(double value);
 
 }

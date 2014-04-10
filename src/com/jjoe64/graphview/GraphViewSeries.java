@@ -26,6 +26,7 @@ import java.util.List;
 import android.graphics.Canvas;
 
 import com.jjoe64.graphview.model.GraphViewDataInterface;
+import com.jjoe64.graphview.renderer.HorizontalLabelRenderer;
 import com.jjoe64.graphview.renderer.Renderer;
 
 /**
@@ -163,6 +164,7 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 		}
 	}
 	private Renderer<T> renderer;
+	private HorizontalLabelRenderer horizontalLabelRenderer;
 	/**
 	 * without viewport. return all values
 	 * @return
@@ -277,6 +279,19 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 			float graphwidth, float graphheight, float border, double minX,
 			double minY, double diffX, double diffY, float horstart) {
 		renderer.drawSeries(canvas, valuesToDraw(), graphwidth, graphheight, border, minX, minY, diffX, diffY, horstart, style);
+		
 	}
-
+	public void drawHorizontalLabels(Canvas canvas,
+			float border,
+			float graphwidth,
+			double diffX,
+			float horstart,
+			float canvasHeight) {
+		if (horizontalLabelRenderer != null) {
+			horizontalLabelRenderer.drawHorizontalLabels(canvas, valuesToDraw(), border, graphwidth, diffX, horstart, canvasHeight);
+		}
+	}
+	public void setHorizontalLabelRenderer(HorizontalLabelRenderer horizontalLabelRenderer) {
+		this.horizontalLabelRenderer = horizontalLabelRenderer;
+	}
 }
