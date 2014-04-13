@@ -158,7 +158,8 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 	 * @param values new data
 	 */
 	public void resetData(List<T> values) {
-		this.values = values; 
+		this.values.clear();
+		this.values.addAll(values); 
 		for (GraphView g : graphViews) {
 			g.redrawAll();
 		}
@@ -179,6 +180,7 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 	 * @return
 	 */
 	public List<T> valuesToDraw(double minx, double sizex) {
+		// TODO modify y when able to zoom in Y
 		return valuesToDraw(minx, sizex, 0, 0);
 	}
 	/**
@@ -190,30 +192,31 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 	 * @return
 	 */
 	public List<T> valuesToDraw(double minx, double sizex, double miny, double sizey) {
-		synchronized (values) {
-			List<T> listData = new ArrayList<T>();
-			boolean found = false;
-			for (int i=0; i<values.size(); i++) {
-				if ((values.get(i).getX() >= minx) && (values.get(i).getX() <= minx+sizex)) {
-					// one before, for nice scrolling
-					if (!found) {
-						if (listData.isEmpty()) {
-							listData.add(values.get(i));
-						} else {
-							listData.set(0, values.get(i));
-						}
-						found = true;
+		// TODO draw only values in y range
+		
+		List<T> listData = new ArrayList<T>();
+		boolean found = false;
+		for (int i=0; i<values.size(); i++) {
+			if ((values.get(i).getX() >= minx) && (values.get(i).getX() <= minx+sizex)) {
+				// one before, for nice scrolling
+				if (!found) {
+					if (listData.isEmpty()) {
+						listData.add(values.get(i));
+					} else {
+						listData.set(0, values.get(i));
 					}
-					// append data
-					listData.add(values.get(i));
-				} else if (found) {
-					// one more for nice scrolling
-					listData.add(values.get(i)); 
-					break;
+					found = true;
 				}
+				// append data
+				listData.add(values.get(i));
+			} else if (found) {
+				// one more for nice scrolling
+				listData.add(values.get(i)); 
+				break;
 			}
-			return Collections.unmodifiableList(listData);
 		}
+		return Collections.unmodifiableList(listData);
+	
 	}
 	public double getMaxX() {
 		double highest = 0;
@@ -278,16 +281,19 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 	public void drawSeries(Canvas canvas,
 			float graphwidth, float graphheight, float border, double minX,
 			double minY, double diffX, double diffY, float horstart) {
+		//renderer.drawSeries(canvas, valuesToDraw(minX, diffX), graphwidth, graphheight, border, minX, minY, diffX, diffY, horstart, style);
 		renderer.drawSeries(canvas, valuesToDraw(), graphwidth, graphheight, border, minX, minY, diffX, diffY, horstart, style);
 		
 	}
 	public void drawHorizontalLabels(Canvas canvas,
 			float border,
 			float graphwidth,
+			double minX,
 			double diffX,
 			float horstart,
 			float canvasHeight) {
 		if (horizontalLabelRenderer != null) {
+			//horizontalLabelRenderer.drawHorizontalLabels(canvas, valuesToDraw(minX, diffX), border, graphwidth, diffX, horstart, canvasHeight);
 			horizontalLabelRenderer.drawHorizontalLabels(canvas, valuesToDraw(), border, graphwidth, diffX, horstart, canvasHeight);
 		}
 	}

@@ -1,12 +1,13 @@
 package com.jjoe64.graphview.renderer;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 
 import android.graphics.Rect;
 
 import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.formatter.LabelFormatter;
-import com.jjoe64.graphview.formatter.NumberFormatter;
+import com.jjoe64.graphview.formatter.NumberLabelFormatter;
 import com.jjoe64.graphview.model.GraphViewDataInterface;
 
 public class DefaultHorizontalLabelRenderer extends AbstractHorizontalLabelRenderer{
@@ -16,9 +17,14 @@ public class DefaultHorizontalLabelRenderer extends AbstractHorizontalLabelRende
 	public DefaultHorizontalLabelRenderer(GraphViewStyle style) {
 		graphViewStyle = style;
 		textBounds = new Rect();
-		labelFormatter = new NumberFormatter();
+		labelFormatter = new NumberLabelFormatter();
 	}
-		
+	public DefaultHorizontalLabelRenderer(GraphViewStyle style, LabelFormatter formatter) {
+		if (formatter == null) throw new InvalidParameterException("formatter must not null");
+		graphViewStyle = style;
+		textBounds = new Rect();
+		labelFormatter = formatter;
+	}	
 	
 	private float calculateOptimalTextSize(String testWord, float rectWidth) {
 		// TODO auto text size
@@ -33,15 +39,16 @@ public class DefaultHorizontalLabelRenderer extends AbstractHorizontalLabelRende
 		// TODO numlabels
 		int numLabels = 5;
 		String[] labels = new String[numLabels];
-
-
-		double min = series.get(0).getX();
-		double max = series.get(series.size()-1).getX();
 		
-		String longestWord = "";
-		for (int i=0; i<numLabels; i++) {
-			labels[i] = labelFormatter.formatLabel(min + ((max-min)*i/numLabels));
-			longestWord = longestWord.length() > labels[i].length()? longestWord:labels[i];
+		if (series.size() > 0) {
+			double min = series.get(0).getX();
+			double max = series.get(series.size()-1).getX();
+			
+			String longestWord = "";
+			for (int i=0; i<numLabels; i++) {
+				labels[i] = labelFormatter.formatLabel(min + ((max-min)*i/numLabels));
+				longestWord = longestWord.length() > labels[i].length()? longestWord:labels[i];
+			}
 		}
 		return labels;
 	}

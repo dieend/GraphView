@@ -11,7 +11,7 @@ import com.jjoe64.graphview.model.GraphViewDataInterface;
 
 public abstract class AbstractHorizontalLabelRenderer implements HorizontalLabelRenderer {
 	String[] horlabels;
-	Paint paint;
+	Paint paint = new Paint();
 	GraphViewStyle graphViewStyle;
 
 	
@@ -24,7 +24,7 @@ public abstract class AbstractHorizontalLabelRenderer implements HorizontalLabel
 			float border, float graphwidth, double diffX, float horstart, float canvasHeight) {
 		// horizontal labels + lines
 		if (horlabels == null || !isLabelValid(graphwidth, series)) {
-			generateHorizontalLabels(graphwidth, series);
+			horlabels = generateHorizontalLabels(graphwidth, series);
 		}
 		int hors = horlabels.length - 1;
 		for (int i = 0; i < horlabels.length; i++) {
@@ -38,7 +38,9 @@ public abstract class AbstractHorizontalLabelRenderer implements HorizontalLabel
             if (i==0)
                 paint.setTextAlign(Align.LEFT);
             paint.setColor(graphViewStyle.getHorizontalLabelsColor());
-            canvas.drawText(horlabels[i], x, canvasHeight - 4, paint);
+            if (horlabels[i] != null) {
+            	canvas.drawText(horlabels[i], x, canvasHeight - 4, paint);
+            }
         
 		}
 	}

@@ -144,7 +144,7 @@ public class GraphView extends LinearLayout {
 
 			for (int i=0; i<graphSeries.size(); i++) {
 				graphSeries.get(i).drawSeries(canvas, graphwidth, graphheight, border, minX, minY, diffX, diffY, horstart);
-				graphSeries.get(i).drawHorizontalLabels(canvas, border, graphwidth, diffX, horstart, height);
+				graphSeries.get(i).drawHorizontalLabels(canvas, border, graphwidth, minX, diffX, horstart, height);
 			}
 
 			if (showLegend) drawLegend(canvas, height, width);
@@ -339,20 +339,28 @@ public class GraphView extends LinearLayout {
 	private boolean staticVerticalLabels;
     private boolean showHorizontalLabels = true;
     private boolean showVerticalLabels = true;
-
-	public GraphView(Context context, AttributeSet attrs) {
-		this(context, attrs.getAttributeValue(null, "title"));
+    
+    public enum VerticalLabelPosition{
+		LEFT,
+		RIGHT
+	}
+	
+	public GraphView(Context context, AttributeSet attrs, VerticalLabelPosition position) {
+		this(context, attrs.getAttributeValue(null, "title"), position);
 
 		int width = attrs.getAttributeIntValue("android", "layout_width", LayoutParams.MATCH_PARENT);
 		int height = attrs.getAttributeIntValue("android", "layout_height", LayoutParams.MATCH_PARENT);
 		setLayoutParams(new LayoutParams(width, height));
 	}
 
+	public void delegateTouchEvent(MotionEvent event){
+		graphViewContentView.onTouchEvent(event);
+	}
 	/**
 	 * @param context
 	 * @param title [optional]
 	 */
-	public GraphView(Context context, String title) {
+	public GraphView(Context context, String title, VerticalLabelPosition position) {
 		super(context);
 		setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
@@ -366,11 +374,20 @@ public class GraphView extends LinearLayout {
 
 		paint = new Paint();
 		graphSeries = new ArrayList<GraphViewSeries<? extends GraphViewDataInterface>>();
-
 		viewVerLabels = new VerLabelsView(context);
-		addView(viewVerLabels);
 		graphViewContentView = new GraphViewContentView(context);
-		addView(graphViewContentView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1));
+		
+		switch (position) {
+		case LEFT:
+			addView(viewVerLabels);
+			addView(graphViewContentView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1));
+			break;
+		case RIGHT:
+			addView(graphViewContentView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1));
+			addView(viewVerLabels);
+			break;
+		}
+		
 	}
 
 	

@@ -2,7 +2,7 @@ package com.jjoe64.graphview.formatter;
 
 import java.text.NumberFormat;
 
-public class NumberFormatter implements LabelFormatter {
+public class NumberLabelFormatter implements LabelFormatter {
 	NumberFormat numberformatter;
 	double lowestValue;
 	double highestValue;

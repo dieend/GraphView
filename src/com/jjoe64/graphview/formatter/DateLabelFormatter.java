@@ -6,13 +6,13 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class DateFormatter implements LabelFormatter{
+public class DateLabelFormatter implements LabelFormatter{
 	String format;
 	
-	public DateFormatter() {
+	public DateLabelFormatter() {
 		format = "d MMM kk:mm";
 	}
-	public DateFormatter(String format) {
+	public DateLabelFormatter(String format) {
 		this.format = format;
 	}
 	@Override
