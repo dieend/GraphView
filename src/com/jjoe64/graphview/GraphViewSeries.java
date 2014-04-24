@@ -72,7 +72,7 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 	
 	private List<T> values; 
 	final String description;
-	final GraphViewSeriesStyle style;
+	private GraphViewSeriesStyle style;
 	private final List<GraphView> graphViews = new ArrayList<GraphView>();
 
 	public GraphViewSeries(List<T> values, Renderer<T> renderer) {
@@ -149,6 +149,9 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 		return style;
 	}
 
+	public void setStyle(GraphViewSeriesStyle style) {
+		this.style = style;
+	}
 	/**
 	 * you should use {@link GraphView#removeSeries(GraphViewSeries)}
 	 * @param graphView

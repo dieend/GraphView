@@ -437,7 +437,7 @@ public class GraphView extends LinearLayout {
 		canvas.drawRoundRect(new RectF(lLeft, lTop, lRight, lBottom), 8, 8, paint);
 
 		for (int i=0; i<graphSeries.size(); i++) {
-			paint.setColor(graphSeries.get(i).style.color);
+			paint.setColor(graphSeries.get(i).getStyle().color);
 			canvas.drawRect(new RectF(lLeft+border, lTop+border+(i*(shapeSize+spacing)), lLeft+border+shapeSize, lTop+border+(i*(shapeSize+spacing))+shapeSize), paint);
 			if (graphSeries.get(i).description != null) {
 				paint.setColor(Color.WHITE);
