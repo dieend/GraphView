@@ -141,7 +141,6 @@ public class GraphView extends LinearLayout {
 			double diffX = maxX - minX;
 
 			paint.setStrokeCap(Paint.Cap.ROUND);
-
 			for (int i=0; i<graphSeries.size(); i++) {
 				graphSeries.get(i).drawSeries(canvas, graphwidth, graphheight, border, minX, minY, diffX, diffY, horstart);
 				graphSeries.get(i).drawHorizontalLabels(canvas, border, graphwidth, minX, diffX, horstart, height);
@@ -179,7 +178,6 @@ public class GraphView extends LinearLayout {
 			if (!isScrollable() || isDisableTouch()) {
 				return super.onTouchEvent(event);
 			}
-
 			boolean handled = false;
 			// first scale
 			if (scalable && scaleDetector != null) {
@@ -203,6 +201,7 @@ public class GraphView extends LinearLayout {
 					if (scrollingStarted) {
 						if (lastTouchEventX != 0) {
 							onMoveGesture(event.getX() - lastTouchEventX);
+							Log.i("com.jjoe64.graphview.GraphView", "scrolling");
 						}
 						lastTouchEventX = event.getX();
 						handled = true;
@@ -212,9 +211,11 @@ public class GraphView extends LinearLayout {
 					invalidate();
 			} else {
 				// currently scaling
+				Log.i("com.jjoe64.graphview.GraphView", "scaling");
 				scrollingStarted = false;
 				lastTouchEventX = 0;
 			}
+			
 			return handled;
 		}
 	}
@@ -555,14 +556,46 @@ public class GraphView extends LinearLayout {
 		if (!ignoreViewport && viewportSize != 0) {
 			return viewportStart+viewportSize;
 		} else {
-			// otherwise use the max x value
-			// values must be sorted by x, so the last value has the largest X value
-			double highest = 0;
-			for (int i=0; i<graphSeries.size(); i++) {
-				highest = Math.max(highest, graphSeries.get(i).getMaxX());
-			}
-			return highest;
+			return getMaxXInSeries();
 		}
+	}
+	protected double getMaxXInSeries() {
+		// values must be sorted by x, so the last value has the largest X value
+		double highest = 0;
+		if (graphSeries.size() > 0) {
+			highest = graphSeries.get(0).getMaxX();
+		}
+		for (int i=0; i<graphSeries.size(); i++) {
+			highest = Math.max(highest, graphSeries.get(i).getMaxX());
+		}
+		return highest;
+	}
+	/**
+	 * returns the minimal X value of the current viewport (if viewport is set)
+	 * otherwise minimal X value of all data.
+	 * @param ignoreViewport
+	 *
+	 * warning: only override this, if you really know want you're doing!
+	 */
+	protected double getMinX(boolean ignoreViewport) {
+		// if viewport is set, use this
+		if (!ignoreViewport && viewportSize != 0) {
+			return viewportStart;
+		} else {
+			return getMinXInSeries();
+		}
+	}
+
+	protected double getMinXInSeries() {
+		// values must be sorted by x, so the first value has the smallest X value
+		double lowest = 0;
+		if (graphSeries.size() > 0) {
+			lowest = graphSeries.get(0).getMinX();
+		}
+		for (int i=1; i<graphSeries.size(); i++) {
+			lowest = Math.min(lowest, graphSeries.get(i).getMinX());
+		}
+		return lowest;
 	}
 
 	/**
@@ -587,30 +620,6 @@ public class GraphView extends LinearLayout {
 		return largest;
 	}
 
-	/**
-	 * returns the minimal X value of the current viewport (if viewport is set)
-	 * otherwise minimal X value of all data.
-	 * @param ignoreViewport
-	 *
-	 * warning: only override this, if you really know want you're doing!
-	 */
-	protected double getMinX(boolean ignoreViewport) {
-		// if viewport is set, use this
-		if (!ignoreViewport && viewportSize != 0) {
-			return viewportStart;
-		} else {
-			// otherwise use the min x value
-			// values must be sorted by x, so the first value has the smallest X value
-			double lowest = 0;
-			if (graphSeries.size() > 0) {
-				lowest = graphSeries.get(0).getMinX();
-			}
-			for (int i=1; i<graphSeries.size(); i++) {
-				lowest = Math.min(lowest, graphSeries.get(i).getMinX());
-			}
-			return lowest;
-		}
-	}
 
 	/**
 	 * returns the minimal Y value of all data.
@@ -820,6 +829,7 @@ public class GraphView extends LinearLayout {
 				public boolean onScale(ScaleGestureDetector detector) {
 					double center = viewportStart + viewportSize / 2;
 					viewportSize /= detector.getScaleFactor();
+					Log.d("com.jjoe64.graphview.GraphView", "current viewport size " + viewportSize + " after scaled with " + detector.getScaleFactor());
 					viewportStart = center - viewportSize / 2;
 
 					// viewportStart must not be < minX

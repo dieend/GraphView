@@ -1,15 +1,14 @@
 package com.jjoe64.graphview.renderer;
 
-import java.util.List;
-
 import android.graphics.Canvas;
 
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
+import com.jjoe64.graphview.GraphViewSeries.Values;
 import com.jjoe64.graphview.model.GraphViewDataInterface;
 
 public interface Renderer<T extends GraphViewDataInterface> {
 	public void drawSeries(Canvas canvas, 
-			List<T> values, 
+			Values<T> values, 
 			float graphwidth, 
 			float graphheight, 
 			float border, 

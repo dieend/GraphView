@@ -1,12 +1,12 @@
 package com.jjoe64.graphview.renderer;
 
-import java.util.List;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
+import com.jjoe64.graphview.GraphViewSeries.Values;
 import com.jjoe64.graphview.model.GraphViewOHLCDataInterface;
 
 public class CandleGraphRenderer <T extends GraphViewOHLCDataInterface> implements Renderer<T> {
@@ -33,20 +33,20 @@ public class CandleGraphRenderer <T extends GraphViewOHLCDataInterface> implemen
 		downPaint = down;
 	}
 	@Override
-	public void drawSeries(Canvas canvas, List<T> series,
+	public void drawSeries(Canvas canvas, Values<T> series,
 			float graphwidth, float graphheight, float border, double minX,
 			double minY, double diffX, double diffY, float horstart,
 			GraphViewSeriesStyle style) {
-		List<T> values = series;
-		candleWidth = Math.max(2,graphwidth / (values.size()+2) - 10);
+		Values<T> values = series;
+		candleWidth = Math.max(2,graphwidth / (values.idxMaxX-values.idxMinX+2) - 10);
 		float startgap = (float)(horstart+ 1);
-		for (int i = 0; i < values.size(); i++) {
-			double x = valueToJava2d(values.get(i).getX(), minX, diffX, graphwidth);
+		for (int i = values.idxMinX; i <= values.idxMaxX; i++) {
+			double x = valueToJava2d(values.v.get(i).getX(), minX, diffX, graphwidth);
 			
-	        double yHigh = valueToJava2d(values.get(i).getHigh(), minY, diffY, graphheight);
-	        double yLow = valueToJava2d(values.get(i).getLow(), minY, diffY, graphheight);
-	        double yOpen = valueToJava2d(values.get(i).getOpen(), minY, diffY, graphheight);
-	        double yClose = valueToJava2d(values.get(i).getClose(), minY, diffY, graphheight);
+	        double yHigh = valueToJava2d(values.v.get(i).getHigh(), minY, diffY, graphheight);
+	        double yLow = valueToJava2d(values.v.get(i).getLow(), minY, diffY, graphheight);
+	        double yOpen = valueToJava2d(values.v.get(i).getOpen(), minY, diffY, graphheight);
+	        double yClose = valueToJava2d(values.v.get(i).getClose(), minY, diffY, graphheight);
 
 	        double maxOpenClose = Math.max(yOpen, yClose);
 	        double minOpenClose = Math.min(yOpen, yClose);

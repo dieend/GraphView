@@ -1,11 +1,10 @@
 package com.jjoe64.graphview.renderer;
 
-import java.util.List;
-
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 
+import com.jjoe64.graphview.GraphViewSeries.Values;
 import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.model.GraphViewDataInterface;
 
@@ -15,12 +14,12 @@ public abstract class AbstractHorizontalLabelRenderer implements HorizontalLabel
 	GraphViewStyle graphViewStyle;
 
 	
-	protected abstract String[] generateHorizontalLabels(float graphwidth, List<? extends GraphViewDataInterface> series);
-	protected abstract boolean isLabelValid(float graphwidth, List<? extends GraphViewDataInterface> series);
+	protected abstract String[] generateHorizontalLabels(float graphwidth, Values<? extends GraphViewDataInterface> series);
+	protected abstract boolean isLabelValid(float graphwidth, Values<? extends GraphViewDataInterface> series);
 
 	@Override
 	public final void drawHorizontalLabels(Canvas canvas,
-			List<? extends GraphViewDataInterface> series, 
+			Values<? extends GraphViewDataInterface> series, 
 			float border, float graphwidth, double diffX, float horstart, float canvasHeight) {
 		// horizontal labels + lines
 		if (horlabels == null || !isLabelValid(graphwidth, series)) {

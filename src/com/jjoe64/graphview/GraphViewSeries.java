@@ -20,7 +20,6 @@
 package com.jjoe64.graphview;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import android.graphics.Canvas;
@@ -64,10 +63,16 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 			this.valueDependentColor = valueDependentColor;
 		}
 	}
-
+	
+	public static class Values<T> {
+		public List<T> v;
+		public int idxMinX;
+		public int idxMaxX;
+	}
+	
+	private List<T> values; 
 	final String description;
 	final GraphViewSeriesStyle style;
-	private List<T> values;
 	private final List<GraphView> graphViews = new ArrayList<GraphView>();
 
 	public GraphViewSeries(List<T> values, Renderer<T> renderer) {
@@ -170,8 +175,12 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 	 * without viewport. return all values
 	 * @return
 	 */
-	public List<T> valuesToDraw() {
-		return Collections.unmodifiableList(values);
+	public Values<T> valuesToDraw() {
+		Values<T> ret = new Values<T>();
+		ret.v = values;
+		ret.idxMinX = 0;
+		ret.idxMaxX = values.size()-1;
+		return ret;
 	}
 	/**
 	 * with X viewport
@@ -179,45 +188,30 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 	 * @param sizex
 	 * @return
 	 */
-	public List<T> valuesToDraw(double minx, double sizex) {
+	public Values<T> valuesToDraw(double minx, double sizex) {
 		// TODO modify y when able to zoom in Y
-		return valuesToDraw(minx, sizex, 0, 0);
-	}
-	/**
-	 * with XY viewport
-	 * @param minx
-	 * @param sizex
-	 * @param miny
-	 * @param sizey
-	 * @return
-	 */
-	public List<T> valuesToDraw(double minx, double sizex, double miny, double sizey) {
-		// TODO draw only values in y range
 		
-		List<T> listData = new ArrayList<T>();
 		boolean found = false;
+		boolean finish = false;
+		Values<T> ret = new Values<T>();
+		ret.v = values;
+		ret.idxMinX = 0;
+		ret.idxMaxX = -1;
 		for (int i=0; i<values.size(); i++) {
-			if ((values.get(i).getX() >= minx) && (values.get(i).getX() <= minx+sizex)) {
-				// one before, for nice scrolling
-				if (!found) {
-					if (listData.isEmpty()) {
-						listData.add(values.get(i));
-					} else {
-						listData.set(0, values.get(i));
-					}
-					found = true;
-				}
-				// append data
-				listData.add(values.get(i));
-			} else if (found) {
-				// one more for nice scrolling
-				listData.add(values.get(i)); 
-				break;
+			if (!found && (values.get(i).getX() >= minx) && (values.get(i).getX() <= minx+sizex)) {
+				found = true;
+				ret.idxMinX = i;
+			} else if (found && (values.get(i).getX() > minx+sizex)) {
+				finish = true;
+				ret.idxMaxX = i;
 			}
 		}
-		return Collections.unmodifiableList(listData);
-	
+		if (found && !finish) {
+			ret.idxMaxX = values.size()-1;
+		}
+		return ret;
 	}
+	
 	public double getMaxX() {
 		double highest = 0;
 		if (values.size() > 0) {
@@ -227,20 +221,20 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 	}
 	public double getMaxY() {
 		double largest= Integer.MIN_VALUE;
-		List<T> values = valuesToDraw();
-		for (int ii=0; ii<values.size(); ii++) {
-			if (values.get(ii).getY() > largest) {
-				largest = values.get(ii).getY();
+		Values<T> values = valuesToDraw();
+		for (int ii=values.idxMinX; ii<=values.idxMaxX; ii++) {
+			if (values.v.get(ii).getY() > largest) {
+				largest = values.v.get(ii).getY();
 			}
 		}
 		return largest;
 	}
 	public double getMaxY(double minx, double sizex) {
 		double largest= Integer.MIN_VALUE;
-		List<T> values = valuesToDraw(minx, sizex);
-		for (int ii=0; ii<values.size(); ii++) {
-			if (values.get(ii).getY() > largest) {
-				largest = values.get(ii).getY();
+		Values<T> values = valuesToDraw(minx, sizex);
+		for (int ii=values.idxMinX; ii<=values.idxMaxX; ii++) {
+			if (values.v.get(ii).getY() > largest) {
+				largest = values.v.get(ii).getY();
 			}
 		}
 		return largest;
@@ -258,10 +252,10 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 	public double getMinY() {
 		double smallest;
 		smallest = Integer.MAX_VALUE;
-		List<T> values = valuesToDraw();
-		for (int ii=0; ii<values.size(); ii++) {
-			if (values.get(ii).getY() < smallest) {
-				smallest = values.get(ii).getY();
+		Values<T> values = valuesToDraw();
+		for (int ii=values.idxMinX; ii<=values.idxMaxX; ii++) {
+			if (values.v.get(ii).getY() < smallest) {
+				smallest = values.v.get(ii).getY();
 			}
 		}
 		return smallest;
@@ -270,10 +264,10 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 	public double getMinY(double minx, double sizex) {
 		double smallest;
 		smallest = Integer.MAX_VALUE;
-		List<T> values = valuesToDraw(minx, sizex);
-		for (int ii=0; ii<values.size(); ii++) {
-			if (values.get(ii).getY() < smallest) {
-				smallest = values.get(ii).getY();
+		Values<T> values = valuesToDraw(minx, sizex);
+		for (int ii=values.idxMinX; ii<=values.idxMaxX; ii++) {
+			if (values.v.get(ii).getY() < smallest) {
+				smallest = values.v.get(ii).getY();
 			}
 		}
 		return smallest;
@@ -281,8 +275,8 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 	public void drawSeries(Canvas canvas,
 			float graphwidth, float graphheight, float border, double minX,
 			double minY, double diffX, double diffY, float horstart) {
-		//renderer.drawSeries(canvas, valuesToDraw(minX, diffX), graphwidth, graphheight, border, minX, minY, diffX, diffY, horstart, style);
-		renderer.drawSeries(canvas, valuesToDraw(), graphwidth, graphheight, border, minX, minY, diffX, diffY, horstart, style);
+		renderer.drawSeries(canvas, valuesToDraw(minX, diffX), graphwidth, graphheight, border, minX, minY, diffX, diffY, horstart, style);
+//		renderer.drawSeries(canvas, valuesToDraw(), graphwidth, graphheight, border, minX, minY, diffX, diffY, horstart, style);
 		
 	}
 	public void drawHorizontalLabels(Canvas canvas,
@@ -293,8 +287,8 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 			float horstart,
 			float canvasHeight) {
 		if (horizontalLabelRenderer != null) {
-			//horizontalLabelRenderer.drawHorizontalLabels(canvas, valuesToDraw(minX, diffX), border, graphwidth, diffX, horstart, canvasHeight);
-			horizontalLabelRenderer.drawHorizontalLabels(canvas, valuesToDraw(), border, graphwidth, diffX, horstart, canvasHeight);
+			horizontalLabelRenderer.drawHorizontalLabels(canvas, valuesToDraw(minX, diffX), border, graphwidth, diffX, horstart, canvasHeight);
+//			horizontalLabelRenderer.drawHorizontalLabels(canvas, valuesToDraw(), border, graphwidth, diffX, horstart, canvasHeight);
 		}
 	}
 	public void setHorizontalLabelRenderer(HorizontalLabelRenderer horizontalLabelRenderer) {

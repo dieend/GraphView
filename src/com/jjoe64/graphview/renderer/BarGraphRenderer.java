@@ -26,6 +26,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
+import com.jjoe64.graphview.GraphViewSeries.Values;
 import com.jjoe64.graphview.model.GraphViewDataInterface;
 
 /**
@@ -86,18 +87,19 @@ public class BarGraphRenderer implements Renderer<GraphViewDataInterface>{
 	}
 
 	@Override
-	public void drawSeries(Canvas canvas, List<GraphViewDataInterface> values,
+	public void drawSeries(Canvas canvas, Values<GraphViewDataInterface> v,
 			float graphwidth, float graphheight, float border, double minX,
 			double minY, double diffX, double diffY, float horstart,
 			GraphViewSeriesStyle style) {
-		float colwidth = graphwidth / (values.size());
+		List<GraphViewDataInterface> values = v.v;
+		float colwidth = graphwidth / (v.idxMaxX - v.idxMinX);
 
 		paint.setStrokeWidth(style.thickness);
 
 		float offset = 0;
 
 		// draw data
-		for (int i = 0; i < values.size(); i++) {
+		for (int i = v.idxMinX; i <= v.idxMaxX; i++) {
 			float valY = (float) (values.get(i).getY() - minY);
 			float ratY = (float) (valY / diffY);
 			float y = graphheight * ratY;

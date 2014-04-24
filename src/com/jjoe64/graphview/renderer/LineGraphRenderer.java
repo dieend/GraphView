@@ -19,14 +19,13 @@
 
 package com.jjoe64.graphview.renderer;
 
-import java.util.List;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
+import com.jjoe64.graphview.GraphViewSeries.Values;
 import com.jjoe64.graphview.model.GraphViewDataInterface;
 
 /**
@@ -99,7 +98,7 @@ public class LineGraphRenderer implements Renderer<GraphViewDataInterface> {
 	}
 
 	@Override
-	public void drawSeries(Canvas canvas, List<GraphViewDataInterface> values,
+	public void drawSeries(Canvas canvas, Values<GraphViewDataInterface> values,
 			float graphwidth, float graphheight, float border, double minX,
 			double minY, double diffX, double diffY, float horstart,
 			GraphViewSeriesStyle style) {
@@ -119,12 +118,12 @@ public class LineGraphRenderer implements Renderer<GraphViewDataInterface> {
 		lastEndY = 0;
 		lastEndX = 0;
 		float firstX = 0;
-		for (int i = 0; i < values.size(); i++) {
-			double valY = values.get(i).getY() - minY;
+		for (int i = values.idxMinX; i <= values.idxMaxX; i++) {
+			double valY = values.v.get(i).getY() - minY;
 			double ratY = valY / diffY;
 			double y = graphheight * ratY;
 
-			double valX = values.get(i).getX() - minX;
+			double valX = values.v.get(i).getX() - minX;
 			double ratX = valX / diffX;
 			double x = graphwidth * ratX;
 

@@ -1,10 +1,10 @@
 package com.jjoe64.graphview.renderer;
 
 import java.security.InvalidParameterException;
-import java.util.List;
 
 import android.graphics.Rect;
 
+import com.jjoe64.graphview.GraphViewSeries.Values;
 import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.formatter.LabelFormatter;
 import com.jjoe64.graphview.formatter.NumberLabelFormatter;
@@ -35,14 +35,14 @@ public class DefaultHorizontalLabelRenderer extends AbstractHorizontalLabelRende
 	
 	@Override
 	protected String[] generateHorizontalLabels(float graphwidth,
-			List<? extends GraphViewDataInterface> series) {
+			Values<? extends GraphViewDataInterface> series) {
 		// TODO numlabels
 		int numLabels = 5;
 		String[] labels = new String[numLabels];
 		
-		if (series.size() > 0) {
-			double min = series.get(0).getX();
-			double max = series.get(series.size()-1).getX();
+		if (series.idxMaxX>=series.idxMinX) {
+			double min = series.v.get(series.idxMinX).getX();
+			double max = series.v.get(series.idxMaxX).getX();
 			
 			String longestWord = "";
 			for (int i=0; i<numLabels; i++) {
@@ -55,7 +55,7 @@ public class DefaultHorizontalLabelRenderer extends AbstractHorizontalLabelRende
 
 	@Override
 	protected boolean isLabelValid(float graphwidth,
-			List<? extends GraphViewDataInterface> series) {
+			Values<? extends GraphViewDataInterface> series) {
 		// TODO invalidate
 		return false;
 	}
