@@ -2,6 +2,7 @@ package com.jjoe64.graphview.renderer;
 
 import android.graphics.Canvas;
 
+import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.GraphViewSeries.Values;
 import com.jjoe64.graphview.model.GraphViewDataInterface;
 
@@ -12,5 +13,6 @@ public interface HorizontalLabelRenderer {
 			float graphwidth,
 			double diffX,
 			float horstart,
-			float canvasHeight);
+			float canvasHeight,
+			GraphViewStyle graphViewStyle);
 }

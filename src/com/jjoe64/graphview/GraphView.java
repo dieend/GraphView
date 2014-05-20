@@ -87,7 +87,13 @@ public class GraphView extends LinearLayout {
 			float height = getHeight();
 			float width = getWidth() - 1;
 			
-			
+			if (labelTextHeight == null) {
+				paint.setTextSize(getGraphViewStyle().getTextSize());
+				double testY = ((getMaxY()-getMinY())*0.783)+getMinY();
+				String testLabel = formatLabel(testY, false);
+				paint.getTextBounds(testLabel, 0, testLabel.length(), textBounds);
+				labelTextHeight = (textBounds.height());
+			}
             border += labelTextHeight;
 
 			float graphheight = height - (2 * border);
@@ -143,7 +149,7 @@ public class GraphView extends LinearLayout {
 			paint.setStrokeCap(Paint.Cap.ROUND);
 			for (int i=0; i<graphSeries.size(); i++) {
 				graphSeries.get(i).drawSeries(canvas, graphwidth, graphheight, border, minX, minY, diffX, diffY, horstart);
-				graphSeries.get(i).drawHorizontalLabels(canvas, border, graphwidth, minX, diffX, horstart, height);
+				graphSeries.get(i).drawHorizontalLabels(canvas, border, graphwidth, minX, diffX, horstart, height, graphViewStyle);
 			}
 
 			if (showLegend) drawLegend(canvas, height, width);
@@ -345,7 +351,13 @@ public class GraphView extends LinearLayout {
 		LEFT,
 		RIGHT
 	}
-	
+    public GraphView(Context context, AttributeSet attrs) {
+    	this(context, attrs.getAttributeValue(null, "title"), VerticalLabelPosition.LEFT);
+
+		int width = attrs.getAttributeIntValue("android", "layout_width", LayoutParams.MATCH_PARENT);
+		int height = attrs.getAttributeIntValue("android", "layout_height", LayoutParams.MATCH_PARENT);
+		setLayoutParams(new LayoutParams(width, height));
+    }
 	public GraphView(Context context, AttributeSet attrs, VerticalLabelPosition position) {
 		this(context, attrs.getAttributeValue(null, "title"), position);
 

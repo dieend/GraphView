@@ -288,9 +288,10 @@ public class GraphViewSeries <T extends GraphViewDataInterface>{
 			double minX,
 			double diffX,
 			float horstart,
-			float canvasHeight) {
+			float canvasHeight,
+			GraphViewStyle graphViewStyle) {
 		if (horizontalLabelRenderer != null) {
-			horizontalLabelRenderer.drawHorizontalLabels(canvas, valuesToDraw(minX, diffX), border, graphwidth, diffX, horstart, canvasHeight);
+			horizontalLabelRenderer.drawHorizontalLabels(canvas, valuesToDraw(minX, diffX), border, graphwidth, diffX, horstart, canvasHeight, graphViewStyle);
 //			horizontalLabelRenderer.drawHorizontalLabels(canvas, valuesToDraw(), border, graphwidth, diffX, horstart, canvasHeight);
 		}
 	}

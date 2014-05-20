@@ -15,13 +15,11 @@ public class DefaultHorizontalLabelRenderer extends AbstractHorizontalLabelRende
 	LabelFormatter labelFormatter;
 	Rect textBounds;
 	public DefaultHorizontalLabelRenderer(GraphViewStyle style) {
-		graphViewStyle = style;
 		textBounds = new Rect();
 		labelFormatter = new NumberLabelFormatter();
 	}
 	public DefaultHorizontalLabelRenderer(GraphViewStyle style, LabelFormatter formatter) {
 		if (formatter == null) throw new InvalidParameterException("formatter must not null");
-		graphViewStyle = style;
 		textBounds = new Rect();
 		labelFormatter = formatter;
 	}	

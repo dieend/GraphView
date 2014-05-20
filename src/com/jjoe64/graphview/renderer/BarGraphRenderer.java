@@ -24,9 +24,12 @@ import java.util.List;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
 import com.jjoe64.graphview.GraphViewSeries.Values;
+import com.jjoe64.graphview.formatter.LabelFormatter;
+import com.jjoe64.graphview.formatter.NumberLabelFormatter;
 import com.jjoe64.graphview.model.GraphViewDataInterface;
 
 /**
@@ -36,35 +39,11 @@ import com.jjoe64.graphview.model.GraphViewDataInterface;
 public class BarGraphRenderer implements Renderer<GraphViewDataInterface>{
 	private boolean drawValuesOnTop;
 	private int valuesOnTopColor = Color.WHITE;
-
+	private LabelFormatter formatter = new NumberLabelFormatter();
 	private Paint paint;
 	public BarGraphRenderer() {
 		paint = new Paint();
 	}
-	//TODO
-//	@Override
-//	protected void drawHorizontalLabels(Canvas canvas, float border,
-//			float horstart, float height, String[] horlabels, float graphwidth) {
-//		// horizontal labels + lines
-//		paint.setTextAlign(Align.CENTER);
-//
-//		int hors = horlabels.length;
-//		float barwidth = graphwidth/horlabels.length;
-//		float textOffset = barwidth/2;
-//		for (int i = 0; i < horlabels.length; i++) {
-//			// lines
-//			float x = ((graphwidth / hors) * i) + horstart;
-//			paint.setColor(graphViewStyle.getGridColor());
-//			canvas.drawLine(x, height - border, x, border, paint);
-//
-//            if(getShowHorizontalLabels()) {
-//                // text
-//                x = barwidth*i + textOffset + horstart;
-//                paint.setColor(graphViewStyle.getHorizontalLabelsColor());
-//                canvas.drawText(horlabels[i], x, height - 4, paint);
-//            }
-//		}
-//	}
 
 	public boolean getDrawValuesOnTop() {
 		return drawValuesOnTop;
@@ -92,7 +71,7 @@ public class BarGraphRenderer implements Renderer<GraphViewDataInterface>{
 			double minY, double diffX, double diffY, float horstart,
 			GraphViewSeriesStyle style) {
 		List<GraphViewDataInterface> values = v.v;
-		float colwidth = graphwidth / (v.idxMaxX - v.idxMinX);
+		float colwidth = graphwidth / (v.idxMaxX - v.idxMinX+1);
 
 		paint.setStrokeWidth(style.thickness);
 
@@ -118,13 +97,14 @@ public class BarGraphRenderer implements Renderer<GraphViewDataInterface>{
 
 			// -----Set values on top of graph---------
 			//TODO
-//			if (drawValuesOnTop) {
-//				top -= 4;
-//				if (top<=border) top+=border+4;
-//				paint.setTextAlign(Align.CENTER);
-//				paint.setColor(valuesOnTopColor );
-//				canvas.drawText(formatLabel(values.get(i).getY(), false), (left+right)/2, top, paint);
-//			}
+			if (drawValuesOnTop) {
+				top -= 4;
+				if (top<=border) top+=border+4;
+				paint.setTextAlign(Align.CENTER);
+				paint.setColor(valuesOnTopColor);
+				paint.setAntiAlias(true);
+				canvas.drawText(formatter.formatLabel(values.get(i).getY()),(left+right)/2, top, paint);
+			}
 		}
 	}
 }
